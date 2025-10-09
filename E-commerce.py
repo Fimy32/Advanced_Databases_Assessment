@@ -40,10 +40,11 @@ CREATE TABLE IF NOT EXISTS Basket (
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS PreviousOrder (
     BasketID INTEGER PRIMARY KEY,
-    Time TEXT DEFAULT "September",
-    FOREIGN KEY (BasketID) REFERENCES Basket(BasketID)
+    Time TEXT DEFAULT 'September',
+    FOREIGN KEY (BasketID) REFERENCES CustomerBasket(BasketID)
 );
 """)
+
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Item (
@@ -83,11 +84,34 @@ CREATE TABLE IF NOT EXISTS FormatType (
 );
 """)
 
+#------------------------------------------------------------------ TRIGGERS ------------------------------------------------------------------
 
+#Add stock when user adds item to basket
 cursor.execute("""
-    CREATE TRIGGER PurchaseStockTrigger
+    CREATE TRIGGER ItemtoBasketTrigger
+    AFTER Insert
+    ON Basket
+    BEGIN
+    UPDATE Item
+    SET Stock = Stock + (
+        SELECT Quantity
+        FROM Basket
+        WHERE Basket.BasketID = NEW.BasketID
+        AND Basket.ItemID = Item.ItemID
+    )
+    WHERE Item.ItemID IN (
+        SELECT ItemID
+        FROM Basket
+        WHERE Basket.BasketID = NEW.BasketID
+    );
+    END;
+""")
+
+#Edit stock when user updates basket
+cursor.execute("""
+    CREATE TRIGGER UpdateItemInBasketTrigger
     AFTER Update
-    ON CustomerBasket
+    ON Basket
     BEGIN
     UPDATE Item
     SET Stock = Stock - (
@@ -104,6 +128,28 @@ cursor.execute("""
     END;
 """)
 
+#Return stock when user removes item from basket
+cursor.execute("""
+    CREATE TRIGGER ReturnItem
+    AFTER Delete
+    ON Basket
+    BEGIN
+    UPDATE Item
+    SET Stock = Stock + (
+        SELECT Quantity
+        FROM Basket
+        WHERE Basket.BasketID = OLD.BasketID
+        AND Basket.ItemID = Item.ItemID
+    )
+    WHERE Item.ItemID IN (
+        SELECT ItemID
+        FROM Basket
+        WHERE Basket.BasketID = OLD.BasketID
+    );
+    END;
+""")
+
+#Basket goes on to orders when user buys basket
 cursor.execute("""
     CREATE TRIGGER PurchaseOrderTrigger
     AFTER Update
@@ -114,12 +160,39 @@ cursor.execute("""
     END;
 """)
 
+
 def CustomerBasketPaid(basket_id):
     cursor.execute("""
         UPDATE CustomerBasket
         SET Paid = TRUE
         WHERE BasketID = ?;""",
         (basket_id,))
+
+def CustomerBasketAdd(basket_id):
+    cursor.execute("""
+        INSERT INTO Basket (BasketID, ItemID, Quantity)
+        VALUES (?, 10, 10);""",
+        (basket_id,))
+
+def CustomerBasketUpdate(basket_item_id, new_quantity):
+    cursor.execute("""
+        UPDATE Basket
+        SET Quantity = ? 
+        WHERE BasketItemID = ?;""",
+        (new_quantity, basket_item_id))
+    
+def CustomerBasketDelete(basket_item_id):
+    cursor.execute("""
+        DELETE FROM Basket
+        WHERE BasketItemID = ?;""",
+        (basket_item_id,))
+#----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 ##AI, Manually do it later
@@ -245,9 +318,19 @@ for (basket_id,) in paid_baskets:
     )
 
 DB.commit()
+
 while (input("Would you like to simulate a purchase? Y/N\n") == "Y"):
     CustomerBasketPaid(input("Enter BasketID to pay for:\n"))
     DB.commit()
+while (input("Would you like to add to a basket? Y/N\n") == "Y"):
+    CustomerBasketAdd(input("Enter BasketID to add to:\n"))
+    DB.commit()
+while (input("Would you like to Update a purchase? Y/N\n") == "Y"):
+    CustomerBasketUpdate(input("Enter BasketItemID to update:\n"),input("Enter Quantity to update with:\n"))
+    DB.commit()
+while (input("Would you like to delete an item in your basket? Y/N\n") == "Y"):
+    CustomerBasketDelete(input("Enter BasketItemID to delete?:\n"))
 
+DB.commit()
 
 DB.close()
