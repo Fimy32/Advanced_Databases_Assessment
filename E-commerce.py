@@ -197,9 +197,6 @@ def CustomerBasketDelete(basket_item_id):
 
 ##AI, Manually do it later
 
-# -------------------------
-# Insert Customer data
-# -------------------------
 customers = [
     (1, "Forename1", "Surname1", "1 Mainstreet"),
     (2, "Forename2", "Surname2", "2 Mainstreet"),
@@ -210,43 +207,43 @@ customers = [
 ]
 cursor.executemany("INSERT OR IGNORE INTO Customer (CustomerID, FirstName, Surname, ShippingAddress) VALUES (?, ?, ?, ?);", customers)
 
-# -------------------------
-# Insert CustomerBasket data
-# -------------------------
 customer_baskets = [
     (1,1, False),
     (2,2, False),
     (3,3, False),
     (4,4, False),
     (5,5, False),
-    (6,6, False)
+    (6,6, False),
+    (7,1, False),
+    (8,4, False),
+
+
 ]
 cursor.executemany("INSERT OR IGNORE INTO CustomerBasket (BasketID, CustomerID, Paid) VALUES (?, ?, ?);", customer_baskets)
 
-# -------------------------
-# Insert Basket data
-# -------------------------
 baskets = [
     (1,1,16,1),
-    (2,2,17,1),
-    (3,3,6,1),
-    (4,3,7,50),
-    (5,3,9,2),
-    (6,9,11,1),
-    (7,5,12,1),
-    (8,11,13,1),
-    (9,12,14,1),
-    (10,13,15,2),
-    (11,14,16,1),
-    (12,15,17,1),
-    (13,1,1,1),
-    (14,5,3,3)
+    (2,1,2,1),
+    (3,1,3,1),
+    (4,1,4,50),
+    (5,2,17,2),
+    (6,3,6,1),
+    (7,3,7,1),
+    (8,3,3,1),
+    (9,4,9,1),
+    (10,4,5,2),
+    (11,4,11,1),
+    (12,5,12,1),
+    (13,5,13,1),
+    (14,5,14,3),
+    (15,5,15,1),
+    (16,6,1,1),
+    (17,6,5,3),
+    (18,7,1,100),
+    (19,8,5,1)
 ]
 cursor.executemany("INSERT INTO Basket (BasketItemID, BasketID, ItemID, Quantity) VALUES (?, ?, ?, ?);", baskets)
 
-# -------------------------
-# Insert Item data
-# -------------------------
 items = [
     (1, "Pop Album1", 2, "Description1", 15.00),
     (2, "Pop Album2", 2, "Description2", 20.00),
@@ -267,9 +264,6 @@ items = [
 cursor.executemany("INSERT OR IGNORE INTO Item (ItemID, ItemName, ItemTypeID, ItemDescription, ItemPrice) VALUES (?, ?, ?, ?, ?);", items)
 
 
-# -------------------------
-# Insert ItemType data (with FormatID and ManufacturerID included as per your schema)
-# -------------------------
 item_types = [
     (1, "Record", 1, 2),
     (2, "CD", 2, 1),
@@ -280,9 +274,7 @@ item_types = [
 ]
 cursor.executemany("INSERT OR IGNORE INTO ItemType (ItemTypeID, TypeName, FormatID, ManufacturerID) VALUES (?, ?, ?, ?);", item_types)
 
-# -------------------------
-# Insert Manufacturer data
-# -------------------------
+
 manufacturers = [
     (1, "Universal", ""),
     (2, "Sony", ""),
@@ -292,9 +284,6 @@ manufacturers = [
 ]
 cursor.executemany("INSERT OR IGNORE INTO Manufacturer (ManufacturerID, ManufacturerName, ManufacturerDesc) VALUES (?, ?, ?);", manufacturers)
 
-# -------------------------
-# Insert FormatType data
-# -------------------------
 formats = [
     (1, "Analogue"),
     (2, "Optical"),
@@ -334,3 +323,32 @@ while (input("Would you like to delete an item in your basket? Y/N\n") == "Y"):
 DB.commit()
 
 DB.close()
+
+
+
+
+# DROP VIEW IF EXISTS DeliveredItems;
+
+# CREATE VIEW DeliveredItems AS
+# SELECT Item.ItemName, Item.ItemDescription, Item.ItemPrice, Basket.Quantity
+# FROM Basket
+# LEFT JOIN Item ON Item.ItemID = Basket.ItemID
+# LEFT JOIN CustomerBasket ON CustomerBasket.BasketID = Basket.BasketID
+# WHERE CustomerBasket.Paid = 1;
+
+# SELECT *
+# FROM DeliveredItems;
+
+# CREATE VIEW CustomerProfile AS
+# SELECT Customer.FirstName, Customer.Surname, CustomerBasket.BasketID
+# FROM Customer
+# LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID;
+
+# SELECT *
+# FROM CustomerProfile;
+
+# DROP VIEW CustomerProfile
+
+
+
+
