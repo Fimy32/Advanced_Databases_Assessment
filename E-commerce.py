@@ -186,6 +186,67 @@ def CustomerBasketDelete(basket_item_id):
         DELETE FROM Basket
         WHERE BasketItemID = ?;""",
         (basket_item_id,))
+    
+
+
+def customerProfileView():
+    cursor.execute("""
+        DROP VIEW CustomerProfile
+                   
+        CREATE VIEW CustomerProfile AS
+        SELECT Customer.FirstName, Customer.Surname, CustomerBasket.BasketID
+        FROM Customer
+        LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID;
+
+        SELECT *
+        FROM CustomerProfile;""")
+
+def deliveredItemsView():
+    cursor.execute("""
+        DROP VIEW IF EXISTS DeliveredItems;
+
+        CREATE VIEW DeliveredItems AS
+        SELECT Item.ItemName, Item.ItemDescription, Item.ItemPrice, Basket.Quantity
+        FROM Basket
+        LEFT JOIN Item ON Item.ItemID = Basket.ItemID
+        LEFT JOIN CustomerBasket ON CustomerBasket.BasketID = Basket.BasketID
+        WHERE CustomerBasket.Paid = 1;
+
+        SELECT *
+        FROM DeliveredItems;""")
+
+def totalSoldView():
+    cursor.execute("""
+        DROP VIEW IF EXISTS TotalSold;
+
+        CREATE VIEW TotalSold AS
+        SELECT COUNT(Basket.Quantity) AS [Total Items Sold], 
+            COUNT(Basket.Quantity) * Item.ItemPrice AS [Total Profts]
+        FROM Basket
+        LEFT JOIN Item ON Item.ItemID = Basket.ItemID
+        LEFT JOIN CustomerBasket ON CustomerBasket.BasketID = Basket.BasketID
+        WHERE CustomerBasket.Paid = 1;
+
+        SELECT *
+        FROM TotalSold;""")
+
+def totalItemSoldView():
+    cursor.execute("""
+        DROP VIEW IF EXISTS TotalItemSold;
+
+        CREATE VIEW TotalItemSold AS
+        SELECT Item.ItemName,
+            SUM(Basket.Quantity),
+            SUM(Basket.Quantity) * Item.ItemPrice AS [Total Profits]
+        FROM Item
+        RIGHT JOIN Basket ON Basket.ItemID = Item.ItemID
+        GROUP BY Item.ItemID;
+
+        SELECT *
+        FROM TotalItemSold;""")
+    
+
+
 #----------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -327,27 +388,7 @@ DB.close()
 
 
 
-# DROP VIEW IF EXISTS DeliveredItems;
 
-# CREATE VIEW DeliveredItems AS
-# SELECT Item.ItemName, Item.ItemDescription, Item.ItemPrice, Basket.Quantity
-# FROM Basket
-# LEFT JOIN Item ON Item.ItemID = Basket.ItemID
-# LEFT JOIN CustomerBasket ON CustomerBasket.BasketID = Basket.BasketID
-# WHERE CustomerBasket.Paid = 1;
-
-# SELECT *
-# FROM DeliveredItems;
-
-# CREATE VIEW CustomerProfile AS
-# SELECT Customer.FirstName, Customer.Surname, CustomerBasket.BasketID
-# FROM Customer
-# LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID;
-
-# SELECT *
-# FROM CustomerProfile;
-
-# DROP VIEW CustomerProfile
 
 
 
