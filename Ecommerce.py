@@ -4,9 +4,10 @@ cursor = DB.cursor()
 
 tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder"]
 
-if (input("Do you want to clear the table before starting? Y/N\n") == "Y"):
-    for table in tables:
-        cursor.execute(f"DROP TABLE IF EXISTS {table};")
+
+#if (input("Do you want to clear the table before starting? Y/N\n") == "Y"):
+for table in tables:
+    cursor.execute(f"DROP TABLE IF EXISTS {table};")
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Customer (
@@ -369,19 +370,20 @@ for (basket_id,) in paid_baskets:
 
 DB.commit()
 
-while (input("Would you like to simulate a purchase? Y/N\n") == "Y"):
-    CustomerBasketPaid(input("Enter BasketID to pay for:\n"))
-    DB.commit()
-while (input("Would you like to add to a basket? Y/N\n") == "Y"):
-    CustomerBasketAdd(input("Enter BasketID to add to:\n"))
-    DB.commit()
-while (input("Would you like to Update a purchase? Y/N\n") == "Y"):
-    CustomerBasketUpdate(input("Enter BasketItemID to update:\n"),input("Enter Quantity to update with:\n"))
-    DB.commit()
-while (input("Would you like to delete an item in your basket? Y/N\n") == "Y"):
-    CustomerBasketDelete(input("Enter BasketItemID to delete?:\n"))
+def main_program():
+    while (input("Would you like to simulate a purchase? Y/N\n") == "Y"):
+        CustomerBasketPaid(input("Enter BasketID to pay for:\n"))
+        DB.commit()
+    while (input("Would you like to add to a basket? Y/N\n") == "Y"):
+        CustomerBasketAdd(input("Enter BasketID to add to:\n"))
+        DB.commit()
+    while (input("Would you like to Update a purchase? Y/N\n") == "Y"):
+        CustomerBasketUpdate(input("Enter BasketItemID to update:\n"),input("Enter Quantity to update with:\n"))
+        DB.commit()
+    while (input("Would you like to delete an item in your basket? Y/N\n") == "Y"):
+        CustomerBasketDelete(input("Enter BasketItemID to delete?:\n"))
 
-DB.commit()
+    DB.commit()
 
 DB.close()
 
