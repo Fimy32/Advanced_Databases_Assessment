@@ -190,19 +190,21 @@ def CustomerBasketDelete(basket_item_id):
     
 
 
-def customerProfileView():
-    cursor.execute("""
-        DROP VIEW CustomerProfile
-                   
-        CREATE VIEW CustomerProfile AS
-        SELECT Customer.FirstName, Customer.Surname, CustomerBasket.BasketID
-        FROM Customer
-        LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID;
+def createCustomerProfileView():
+    #def createCustomerProfileView():
+    cursor.executescript("""
+    DROP VIEW IF EXISTS CustomerProfile;
+    CREATE VIEW CustomerProfile AS
+    SELECT Customer.FirstName, Customer.Surname, CustomerBasket.BasketID
+    FROM Customer
+    LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID;
+    """)
 
-        SELECT *
-        FROM CustomerProfile;""")
+def returnCutomerProfileView():
+    cursor.execute("SELECT * FROM CustomerProfile;")
+    return cursor.fetchone()
 
-def deliveredItemsView():
+def createDeliveredItemsView():
     cursor.execute("""
         DROP VIEW IF EXISTS DeliveredItems;
 
@@ -216,7 +218,7 @@ def deliveredItemsView():
         SELECT *
         FROM DeliveredItems;""")
 
-def totalSoldView():
+def createTotalSoldView():
     cursor.execute("""
         DROP VIEW IF EXISTS TotalSold;
 
@@ -231,7 +233,7 @@ def totalSoldView():
         SELECT *
         FROM TotalSold;""")
 
-def totalItemSoldView():
+def createTotalItemSoldView():
     cursor.execute("""
         DROP VIEW IF EXISTS TotalItemSold;
 
@@ -370,7 +372,7 @@ for (basket_id,) in paid_baskets:
 
 DB.commit()
 
-def main_program():
+def text_program():
     while (input("Would you like to simulate a purchase? Y/N\n") == "Y"):
         CustomerBasketPaid(input("Enter BasketID to pay for:\n"))
         DB.commit()
@@ -385,7 +387,14 @@ def main_program():
 
     DB.commit()
 
-DB.close()
+
+createCustomerProfileView()
+#createDeliveredItemsView()
+#createTotalSoldView()
+#createTotalItemSoldView()
+
+
+
 
 
 
