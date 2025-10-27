@@ -4,7 +4,6 @@ cursor = DB.cursor()
 
 tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder"]
 
-
 #if (input("Do you want to clear the table before starting? Y/N\n") == "Y"):
 for table in tables:
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
