@@ -1,8 +1,8 @@
 class  EcommerceSystem():
       users = {
-      1 : ("John", "Password1"),
-      5 : ("CoolUser123", "basketball!"),
-      11 : ("Jane", "Password3")
+      ("John", "Password1") : 1,
+      ("CoolUser123", "basketball!") : 5,
+      ("Jane", "Password3") : 11
       }
 
       currentUserID = None

@@ -1,5 +1,5 @@
 import sqlite3
-DB = sqlite3.connect(r"E-commerceDB.db")
+DB = sqlite3.connect(r"EcommerceDB.db")
 cursor = DB.cursor()
 
 tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder"]
@@ -190,7 +190,6 @@ def CustomerBasketDelete(basket_item_id):
 
 
 def createCustomerProfileView():
-    #def createCustomerProfileView():
     cursor.executescript("""
     DROP VIEW IF EXISTS CustomerProfile;
     CREATE VIEW CustomerProfile AS
@@ -199,8 +198,22 @@ def createCustomerProfileView():
     LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID;
     """)
 
-def returnCutomerProfileView():
+def returnCustomerProfileView():
     cursor.execute("SELECT * FROM CustomerProfile;")
+    return cursor.fetchone()
+
+def specificCustomerProfileView(customer_id):
+    cursor.executescript("""
+    DROP VIEW IF EXISTS SpecificCustomerProfile;
+    CREATE VIEW SpecificCustomerProfile AS
+    SELECT Customer.FirstName, Customer.Surname, CustomerBasket.BasketID, CustomerBasket.Paid
+    FROM Customer
+    LEFT JOIN CustomerBasket ON CustomerBasket.CustomerID = Customer.CustomerID
+    WHERE Customer.CustomerID = ?;
+    """, ( customer_id, ))
+
+def returnSpecificCustomerProfileView():
+    cursor.execute("SELECT * FROM SpecificCustomerProfile;")
     return cursor.fetchone()
 
 def createDeliveredItemsView():
@@ -247,7 +260,13 @@ def createTotalItemSoldView():
         SELECT *
         FROM TotalItemSold;""")
     
-
+def generateUserID():
+    cursor.execute("SELECT MAX(CustomerID) FROM Customer;")
+    max_id = cursor.fetchone()[0]
+    if max_id is None:
+        return 1
+    else:
+        return max_id + 1
 
 #----------------------------------------------------------------------------------------------------------------------------------------------
 

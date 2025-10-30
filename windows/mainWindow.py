@@ -9,7 +9,8 @@ class MainWindow(tk.Tk):
             self.geometry("1000x1000")
             self.title("E-commerce Application")
             self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).place(y=50,x=940)
-            self.ecommerceSystem = system     
+            self.ecommerceSystem = system
+            self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
    
       #Appearance Selector
       def lightMode(self):
@@ -31,8 +32,9 @@ class MainWindow(tk.Tk):
             self.update_idletasks()
       
       def createLoginWindow(self):
-            loginWindow = Login(self.eccommerceSystem)
+            loginWindow = Login(self.ecommerceSystem)
             loginWindow.mainloop()
+      
             
 
 

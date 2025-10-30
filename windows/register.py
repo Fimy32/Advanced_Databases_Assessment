@@ -1,36 +1,29 @@
 import tkinter as tk
-from .register import register
+import Ecommerce
 
-class Login(tk.Tk):
+class register(tk.Tk):
       def __init__(self, system):
             super().__init__()
             self.ecommerceSystem = system 
-            #self.attributes('-fullscreen',True)
-            self.title("E-commerce Application")     
-            self.userNameLabel = tk.Label(self, text="Username").pack()
+
+            self.userNameLabe = tk.Label(self, text="Username").pack()
             self.userNameText = tk.Text(self, height=1, width=20)
             self.userNameText.pack()
-            self.passwordLabel = tk.Label(self, text="Password").pack()
+            self.passwordLabe = tk.Label(self, text="Password").pack()
             self.passwordText = tk.Text(self, height=1, width=20)
             self.passwordText.pack()
-            self.loginButton = tk.Button(self, text="Login", command=self.login).pack()
-            self.registerButton = tk.Button(self, text="Register", command=self.createRegisterWindow).pack()
+            self.loginButton = tk.Button(self, text="Register", command=self.register).pack()
             self.wrongText = tk.Label(self, text="Invalid Username or Password", fg="red")
 
-
-
       #Login System
-      def login(self):
+      def register(self):
             for ID in self.ecommerceSystem.users:
-                  if self.userNameText.get("1.0", "end-1c") == ID[0] and self.passwordText.get("1.0", "end-1c") == ID[1]:
-                        self.ecommerceSystem.currentUserID = self.ecommerceSystem.users[ID]
+                  if len(self.userNameText.get("1.0", "end-1c")) > 0 and len(self.passwordText.get("1.0", "end-1c")) > 0:
+                        self.ecommerceSystem.users[(self.userNameText.get("1.0", "end-1c"), self.passwordText.get("1.0", "end-1c"))] = Ecommerce.generateUserID()
                         self.destroy()
                   else:
                         self.wrongText.pack()
 
-      def createRegisterWindow(self):
-            registerWindow = register(self.ecommerceSystem)
-            registerWindow.mainloop()
 
 
 
