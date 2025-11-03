@@ -1,5 +1,7 @@
 import tkinter as tk
 from .register import register
+from Ecommerce import *
+import hashlib
 
 class Login(tk.Tk):
       def __init__(self, system):
@@ -21,8 +23,9 @@ class Login(tk.Tk):
 
       #Login System
       def login(self):
-            for ID in self.ecommerceSystem.users:
-                  if self.userNameText.get("1.0", "end-1c") == ID[0] and self.passwordText.get("1.0", "end-1c") == ID[1]:
+            for ID in returnLoginIDs():
+                  print((self.userNameText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID[0])[0], "\n", (self.passwordText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID[0])[1])
+                  if hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID[0])[0] and self.passwordText.get("1.0", "end-1c").encode().hexdigest() == returnLoginDetailsByID(ID[0])[1]:
                         self.ecommerceSystem.currentUserID = self.ecommerceSystem.users[ID]
                         self.destroy()
                   else:

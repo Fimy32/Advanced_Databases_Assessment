@@ -1,8 +1,10 @@
 import sqlite3
+import hashlib
 DB = sqlite3.connect(r"EcommerceDB.db")
 cursor = DB.cursor()
 
-tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder"]
+
+tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder", "Logins"]
 
 #if (input("Do you want to clear the table before starting? Y/N\n") == "Y"):
 for table in tables:
@@ -81,6 +83,14 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS FormatType (
     FormatID INTEGER PRIMARY KEY AUTOINCREMENT,
     StorageType TEXT
+);
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Logins (
+    LoginID INTEGER PRIMARY KEY,
+    Username TEXT,
+    Password TEXT
 );
 """)
 
@@ -267,6 +277,15 @@ def generateUserID():
         return 1
     else:
         return max_id + 1
+    
+def returnLoginIDs():
+    cursor.execute("SELECT LoginID FROM Logins")
+    print(cursor.fetchall())
+    return cursor.fetchall()
+
+def returnLoginDetailsByID(ID):
+    cursor.execute("""SELECT Username, Password FROM Logins WHERE LoginID = ?;""", ( ID,))
+    return cursor.fetchall()
 
 #----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -374,6 +393,22 @@ formats = [
     (5, "Optical")
 ]
 cursor.executemany("INSERT OR IGNORE INTO FormatType (FormatID, StorageType) VALUES (?, ?);", formats)
+
+logins = [
+    (1, "John", "Password1"),
+    (5, "CoolUser123", "basketball!"),
+    (11, "Jane", "Password3")
+]
+
+encrypted_logins = []
+
+for login in logins:
+    encrypted_logins.append((login[0],
+        str(hashlib.sha256(login[1].encode()).hexdigest()),
+        str(hashlib.sha256(login[2].encode()).hexdigest()),
+       ))                                   
+
+cursor.executemany("INSERT OR IGNORE INTO Logins (LoginID, Username, Password) VALUES (?, ?, ?);", encrypted_logins)
 
 import datetime
 
