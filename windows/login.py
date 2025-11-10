@@ -1,6 +1,6 @@
 import tkinter as tk
 from .register import register
-from Ecommerce import *
+from ecommerceDBHandler import *
 import hashlib
 import main
 

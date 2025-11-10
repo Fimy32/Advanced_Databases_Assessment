@@ -1,5 +1,5 @@
 import ecommerceSystem
-import Ecommerce
+import ecommerceDBHandler
 import windows
 import windows.mainWindow
 

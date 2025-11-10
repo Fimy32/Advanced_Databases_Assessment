@@ -1,5 +1,5 @@
 import tkinter as tk
-import Ecommerce
+import ecommerceDBHandler
 
 class register(tk.Tk):
       def __init__(self, system):
@@ -19,7 +19,7 @@ class register(tk.Tk):
       def register(self):
             for ID in self.ecommerceSystem.users:
                   if len(self.userNameText.get("1.0", "end-1c")) > 0 and len(self.passwordText.get("1.0", "end-1c")) > 0:
-                        self.ecommerceSystem.users[(self.userNameText.get("1.0", "end-1c"), self.passwordText.get("1.0", "end-1c"))] = Ecommerce.generateUserID()
+                        self.ecommerceSystem.users[(self.userNameText.get("1.0", "end-1c"), self.passwordText.get("1.0", "end-1c"))] = ecommerceDBHandler.generateUserID()
                         self.destroy()
                   else:
                         self.wrongText.pack()

@@ -1,5 +1,5 @@
 import tkinter as tk
-import Ecommerce
+import ecommerceDBHandler
 from .login import Login
 
 class MainWindow(tk.Tk):
