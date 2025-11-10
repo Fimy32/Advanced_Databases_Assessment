@@ -2,6 +2,7 @@ import tkinter as tk
 from .register import register
 from Ecommerce import *
 import hashlib
+import main
 
 class Login(tk.Tk):
       def __init__(self, system):
@@ -24,9 +25,12 @@ class Login(tk.Tk):
       #Login System
       def login(self):
             for ID in returnLoginIDs():
-                  print((self.userNameText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID[0])[0], "\n", (self.passwordText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID[0])[1])
-                  if hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID[0])[0] and self.passwordText.get("1.0", "end-1c").encode().hexdigest() == returnLoginDetailsByID(ID[0])[1]:
-                        self.ecommerceSystem.currentUserID = self.ecommerceSystem.users[ID]
+                  print("UserName:",hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID)[0], "\nPassword:", hashlib.sha256(self.passwordText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID)[1])
+                  if hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID)[0] and hashlib.sha256(self.passwordText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID)[1]:
+                        print("LOG ON SUCCESSFUL")
+                        self.ecommerceSystem.currentUserID = ID
+                        self.ecommerceSystem.currentUserName = self.userNameText.get("1.0", "end-1c")
+                        #main.createMainWindow()
                         self.destroy()
                   else:
                         self.wrongText.pack()

@@ -10,6 +10,8 @@ class MainWindow(tk.Tk):
             self.title("E-commerce Application")
             self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).place(y=50,x=940)
             self.ecommerceSystem = system
+            if self.ecommerceSystem.currentUserName != None:
+                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).pack()
             #self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
    
       #Appearance Selector

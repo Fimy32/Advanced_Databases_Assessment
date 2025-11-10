@@ -280,12 +280,16 @@ def generateUserID():
     
 def returnLoginIDs():
     cursor.execute("SELECT LoginID FROM Logins")
-    print(cursor.fetchall())
-    return cursor.fetchall()
+    rows = cursor.fetchall()
+    IDs = []
+    for loginID in rows:
+        IDs.append(loginID[0])
+    return IDs
 
 def returnLoginDetailsByID(ID):
-    cursor.execute("""SELECT Username, Password FROM Logins WHERE LoginID = ?;""", ( ID,))
-    return cursor.fetchall()
+    rows = cursor.execute("""SELECT Username, Password FROM Logins WHERE LoginID = ?;""", ( ID,))
+    for row in rows:
+        return row
 
 #----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -296,7 +300,7 @@ def returnLoginDetailsByID(ID):
 
 
 
-##AI, Manually do it later
+##
 
 customers = [
     (1, "Forename1", "Surname1", "1 Mainstreet"),
