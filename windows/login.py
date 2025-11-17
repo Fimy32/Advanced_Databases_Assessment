@@ -2,7 +2,6 @@ import tkinter as tk
 from .register import register
 from ecommerceDBHandler import *
 import hashlib
-import main
 
 class Login(tk.Tk):
       def __init__(self, system):

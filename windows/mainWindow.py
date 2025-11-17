@@ -1,6 +1,8 @@
+from tkinter import *
 import tkinter as tk
 import ecommerceDBHandler
 from .login import Login
+from .stock import Stock
 
 class MainWindow(tk.Tk):
       def __init__(self, system):
@@ -8,11 +10,14 @@ class MainWindow(tk.Tk):
             #self.attributes('-fullscreen',True)
             self.geometry("1000x1000")
             self.title("E-commerce Application")
-            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).place(y=50,x=940)
+            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).pack()
+            self.stockbutton = tk.Button(self, text="Stock", command=self.createStockWindow).pack()
             self.ecommerceSystem = system
             if self.ecommerceSystem.currentUserName != None:
                   self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).pack()
             #self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
+            self.closeButton = tk.Button(self, text="Close", command=self.destroy).pack(side=tk.BOTTOM)
+
    
       #Appearance Selector
       def lightMode(self):
@@ -36,10 +41,14 @@ class MainWindow(tk.Tk):
       def createLoginWindow(self):
             loginWindow = Login(self.ecommerceSystem)
             loginWindow.mainloop()
+
+      def createStockWindow(self):
+            stockWindow = Stock(self.ecommerceSystem)
+            stockWindow.mainloop()
       
             
 
 
 
-      # closeButton = tk.Button(self, text="Close", command=self.destroy).pack(side=tk.BOTTOM)
+
 

@@ -291,6 +291,23 @@ def returnLoginDetailsByID(ID):
     for row in rows:
         return row
 
+def returnStock():
+    cursor.execute("SELECT ItemName FROM item")
+    items = cursor.fetchall()
+    row1 = []
+    for item in items:
+        row1.append(item[0])
+
+    cursor.execute("SELECT Stock FROM item")
+    stocks = cursor.fetchall()
+    row2 = []
+    for stock in stocks:
+        row2.append(stock[0])
+
+    rows = [row1, row2]
+    print(rows[0], "\n", rows[1])
+    return rows
+
 #----------------------------------------------------------------------------------------------------------------------------------------------
 
 
