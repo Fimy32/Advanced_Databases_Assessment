@@ -103,7 +103,7 @@ cursor.execute("""
     ON Basket
     BEGIN
     UPDATE Item
-    SET Stock = Stock + (
+    SET Stock = Stock - (
         SELECT Quantity
         FROM Basket
         WHERE Basket.BasketID = NEW.BasketID
@@ -170,6 +170,7 @@ cursor.execute("""
     END;
 """)
 
+DB.commit()
 
 def CustomerBasketPaid(basket_id):
     cursor.execute("""
@@ -177,12 +178,14 @@ def CustomerBasketPaid(basket_id):
         SET Paid = TRUE
         WHERE BasketID = ?;""",
         (basket_id,))
+    DB.commit()
 
 def CustomerBasketAdd(basket_id):
     cursor.execute("""
         INSERT INTO Basket (BasketID, ItemID, Quantity)
         VALUES (?, 10, 10);""",
         (basket_id,))
+    DB.commit()
 
 def CustomerBasketUpdate(basket_item_id, new_quantity):
     cursor.execute("""
@@ -307,6 +310,35 @@ def returnStock():
     rows = [row1, row2]
     print(rows[0], "\n", rows[1])
     return rows
+
+def returnBaskets():
+    cursor.execute("SELECT BasketID FROM basket")
+    ids = cursor.fetchall()
+    row1 = []
+    for id in ids:
+        row1.append(id[0])
+
+    cursor.execute("SELECT Quantity FROM basket")
+    quantity = cursor.fetchall()
+    row2 = []
+    for num in quantity:
+        row2.append(num[0])
+
+    rows = [row1, row2]
+    print(rows[0], "\n", rows[1])
+    return rows
+
+def simulatePurchases():
+    CustomerBasketAdd(1)
+    CustomerBasketAdd(7)
+    CustomerBasketAdd(12)
+    CustomerBasketAdd(13)
+    CustomerBasketPaid(1)
+    CustomerBasketPaid(7)
+    CustomerBasketPaid(12)
+    CustomerBasketPaid(13)
+    DB.commit()
+
 
 #----------------------------------------------------------------------------------------------------------------------------------------------
 

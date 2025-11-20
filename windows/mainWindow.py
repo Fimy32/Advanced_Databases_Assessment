@@ -1,8 +1,10 @@
 from tkinter import *
 import tkinter as tk
-import ecommerceDBHandler
+from ecommerceDBHandler import *
 from .login import Login
 from .stock import Stock
+import matplotlib.pyplot as plt
+
 
 class MainWindow(tk.Tk):
       def __init__(self, system):
@@ -11,7 +13,9 @@ class MainWindow(tk.Tk):
             self.geometry("1000x1000")
             self.title("E-commerce Application")
             self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).pack()
-            self.stockbutton = tk.Button(self, text="Stock", command=self.createStockWindow).pack()
+            self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
+            self.stockbutton.pack()
+            self.purchasebutton = tk.Button(self, text="PRESS THIS TO SIMULATE PURCHASES FOR 4 HARD CODED BASKETS", command=self.simulatePurchasesFrontEnd).pack()
             self.ecommerceSystem = system
             if self.ecommerceSystem.currentUserName != None:
                   self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).pack()
@@ -42,10 +46,26 @@ class MainWindow(tk.Tk):
             loginWindow = Login(self.ecommerceSystem)
             loginWindow.mainloop()
 
-      def createStockWindow(self):
-            stockWindow = Stock(self.ecommerceSystem)
-            stockWindow.mainloop()
+      def createStockGrapth(self):
+            itemName = returnStock()[0]
+            stock = returnStock()[1]
+            plt.bar(itemName, stock, color='skyblue')
+            plt.xlabel("Item")
+            plt.ylabel("Stock Quantities")
+            plt.title("Current Stock Count")
+            plt.show()
+
+            itemID = returnBaskets()[0]
+            quantity = returnBaskets()[1]
+            plt.bar(itemID, quantity, color='skyblue')
+            plt.xlabel("Basket Number")
+            plt.ylabel("Number of an individual item In Basket")
+            plt.title("Items held in basket")
+            plt.show()
       
+      def simulatePurchasesFrontEnd(self):
+            simulatePurchases()
+            self.purchasebutton.pack_forget()
             
 
 
