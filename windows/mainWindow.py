@@ -12,15 +12,21 @@ class MainWindow(tk.Tk):
             #self.attributes('-fullscreen',True)
             self.geometry("1000x1000")
             self.title("E-commerce Application")
-            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).pack()
+            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 0, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
-            self.stockbutton.pack()
-            self.purchasebutton = tk.Button(self, text="PRESS THIS TO SIMULATE PURCHASES FOR 4 HARD CODED BASKETS", command=self.simulatePurchasesFrontEnd).pack()
+            self.stockbutton.grid(row = 0, column = 1, sticky = W, pady = 2)
+            self.purchasebutton = tk.Button(self, text="PRESS THIS TO SIMULATE PURCHASES FOR 4 HARD CODED BASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 2, sticky = W, pady = 2)
             self.ecommerceSystem = system
             if self.ecommerceSystem.currentUserName != None:
-                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).pack()
+                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 3, sticky = W, pady = 3)
             #self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
-            self.closeButton = tk.Button(self, text="Close", command=self.destroy).pack(side=tk.BOTTOM)
+            self.closeButton = tk.Button(self, text="Close", command=self.destroy).grid(row = 0, column = 4, sticky = W, pady = 2)
+
+
+            #Grid for item data
+            for i in range(len(returnAllItems()[0])):
+                  l1 = Label(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]))
+                  l1.grid(row = i//3 + 1, column = i%3 + 1, sticky = W, pady = 2)
 
    
       #Appearance Selector

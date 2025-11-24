@@ -4,7 +4,7 @@ DB = sqlite3.connect(r"EcommerceDB.db")
 cursor = DB.cursor()
 
 
-tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder", "Logins"]
+tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder", "Logins", "Icons"]
 
 #if (input("Do you want to clear the table before starting? Y/N\n") == "Y"):
 for table in tables:
@@ -92,6 +92,15 @@ CREATE TABLE IF NOT EXISTS Logins (
     Username TEXT,
     Password TEXT
 );
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Icons (
+    file_path_name TEXT NOT NULL,
+    file_blob BLOB NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT
+);
+
 """)
 
 #------------------------------------------------------------------ TRIGGERS ------------------------------------------------------------------
@@ -328,6 +337,37 @@ def returnBaskets():
     print(rows[0], "\n", rows[1])
     return rows
 
+def returnAllItems():
+    cursor.execute("SELECT ItemName FROM Item")
+    names = cursor.fetchall()
+    row1 = []
+    for name in names:
+        row1.append(name[0])
+    
+    cursor.execute("SELECT ItemPrice FROM Item")
+    names = cursor.fetchall()
+    row2 = []
+    for name in names:
+        row2.append(name[0])
+    
+    cursor.execute("SELECT ItemID FROM Item")
+    names = cursor.fetchall()
+    row3 = []
+    for name in names:
+        row3.append(name[0])
+    
+    cursor.execute("SELECT ItemTypeID FROM Item")
+    names = cursor.fetchall()
+    row4 = []
+    for name in names:
+        row4.append(name[0])
+    
+    rows = [row1, row2, row3, row4]
+    print(rows[0], "\n", rows[1], "\n", rows[2], "\n", rows[3])
+    return rows
+
+
+
 def simulatePurchases():
     CustomerBasketAdd(1)
     CustomerBasketAdd(7)
@@ -338,6 +378,33 @@ def simulatePurchases():
     CustomerBasketPaid(12)
     CustomerBasketPaid(13)
     DB.commit()
+
+def send_media_to_sql():
+    file_path_name = 'C:\\Users\petrosyana\Downloads\Music.mp3'
+    #To open a file in binary format, add 'b' to the mode parameter and "rb" mode opens the file in binary format for reading.
+    with open(file_path_name, 'rb') as file:
+        file_blob = file.read()
+    #to see file in BLOB values
+    print("[INFO] : the last 100 characters of blob = ", file_blob[:100]) 
+    try:
+        conn = sqlite3.connect('db1')
+        print("[INFO] : Successful connection!")
+        cur = conn.cursor()
+        #to insert file_path_name and BLOB to database audio_table
+        sql_insert_file_query = "INSERT INTO audio_table(file_path_name, file_blob)VALUES(?, ?)"
+        cur = conn.cursor()
+        cur.execute(sql_insert_file_query, (file_path_name, file_blob, ))
+        conn.commit()
+        #message to test
+        print("[INFO] : The blob for ", file_path_name, " sent and saved in the database audio_table.") 
+    except Error as e:
+        print(e)
+    finally:
+        if conn:
+            conn.close()
+        #else:
+            #error = "Oh shucks, something is wrong here."
+
 
 
 #----------------------------------------------------------------------------------------------------------------------------------------------
