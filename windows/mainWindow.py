@@ -12,10 +12,12 @@ class MainWindow(tk.Tk):
             #self.attributes('-fullscreen',True)
             self.geometry("1000x1000")
             self.title("E-commerce Application")
-            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 0, sticky = W, pady = 2)
+            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 6, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
-            self.stockbutton.grid(row = 0, column = 1, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="PRESS THIS TO SIMULATE PURCHASES FOR 4 HARD CODED BASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 2, sticky = W, pady = 2)
+            self.stockbutton.grid(row = 0, column = 7, sticky = W, pady = 2)
+            self.purchasebutton = tk.Button(self, text="PRESS THIS TO SIMULATE PURCHASES FOR 4 HARD CODED BASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 8, sticky = W, pady = 2)
+            self.purchasebutton = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 9, sticky = W, pady = 2)
+            self.purchasebutton = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
             self.ecommerceSystem = system
             if self.ecommerceSystem.currentUserName != None:
                   self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 3, sticky = W, pady = 3)
@@ -26,7 +28,7 @@ class MainWindow(tk.Tk):
             #Grid for item data
             for i in range(len(returnAllItems()[0])):
                   l1 = Label(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]))
-                  l1.grid(row = i//3 + 1, column = i%3 + 1, sticky = W, pady = 2)
+                  l1.grid(row = i//5 + 1, column = i%5 + 1, sticky = W, pady = 2)
 
    
       #Appearance Selector
@@ -72,6 +74,13 @@ class MainWindow(tk.Tk):
       def simulatePurchasesFrontEnd(self):
             simulatePurchases()
             self.purchasebutton.pack_forget()
+
+      def saveMedia(self):
+            send_media_to_sql()
+      
+      def loadMedia(self,):
+            for i in range(1,4):
+                  Get_media_from_sql(i)
             
 
 

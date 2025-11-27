@@ -3,7 +3,6 @@ import hashlib
 DB = sqlite3.connect(r"EcommerceDB.db")
 cursor = DB.cursor()
 
-
 tables = ["Basket", "CustomerBasket", "Item", "Customer", "ItemType", "Manufacturer", "FormatType", "PreviousOrder", "Logins", "Icons"]
 
 #if (input("Do you want to clear the table before starting? Y/N\n") == "Y"):
@@ -379,7 +378,7 @@ def simulatePurchases():
     CustomerBasketPaid(13)
     DB.commit()
 
-def send_media_to_sql(filePath):
+def send_media_to_sql_user(filePath):
     #To open a file in binary format, add 'b' to the mode parameter and "rb" mode opens the file in binary format for reading.
     with open(filePath, 'rb') as file:
         file_blob = file.read()
@@ -394,6 +393,41 @@ def send_media_to_sql(filePath):
     #message to test
     print("[INFO] : The blob for ", filePath, " sent and saved in the database audio_table.") 
 
+def send_media_to_sql():
+        paths = ["./icons/music.png", "./icons/movie.png", "./icons/game.png"]
+        for path in paths:
+            #To open a file in binary format, add 'b' to the mode parameter and "rb" mode opens the file in binary format for reading.
+            with open(path, 'rb') as file:
+                file_blob = file.read()
+            #to see file in BLOB values
+            print("[INFO] : the last 100 characters of blob = ", file_blob[:100]) 
+            #to insert file_path_name and BLOB to database audio_table
+            sql_insert_file_query = "INSERT INTO Icons(file_path_name, file_blob)VALUES(?, ?)"
+            cursor.execute(sql_insert_file_query, (path, file_blob, ))
+            DB.commit()
+            #message to test
+            print("[INFO] : The blob for ", path, " sent and saved in the database audio_table.") 
+
+send_media_to_sql()
+
+def Get_media_from_sql(iconID):
+        print("[INFO] : Connected to SQLite to read_blob_data")
+        cursor.execute("""SELECT * from Icons where id = ?;""", (iconID,))                        
+        record = cursor.fetchall()
+        for row in record:
+            converted_file_name = row[0]
+            media_binarycode  = row[1]
+            last_slash_index = converted_file_name.rfind("/") + 1 
+            final_file_name = converted_file_name[last_slash_index:] 
+            print("[DATA] : media file successfully stored on disk. Check the project directory. \n")
+        with open(final_file_name, 'wb') as file:
+                file.write(media_binarycode)
+
+        
+Get_media_from_sql(1)
+Get_media_from_sql(2)
+Get_media_from_sql(3)
+
 
 
 
@@ -406,7 +440,7 @@ def send_media_to_sql(filePath):
 
 
 
-##
+
 
 customers = [
     (1, "Forename1", "Surname1", "1 Mainstreet"),
@@ -468,18 +502,31 @@ items = [
     (12, "2D Game2", 5, "Description10", 60.00),
     (13, "Country Album1", 2, "Description11", 50.00),
     (14, "2D Game1", 6, "Description12", 25.00),
-    (15, "Action Show1", 4, "Description13", 30.00),
-    (16, "Pop Album1", 1, "Description14", 20.00),
-    (17, "Action Game3", 5, "Description15", 22.50)
+    (15, "Game Show1", 4, "Description13", 150.00),
+    (16, "Jungle Album1", 1, "Description14", 80.00),
+    (17, "Educational Software1", 5, "Description15", 5.00),
+    (18, "Comedy Movie2", 4, "Description16", 9.50),
+    (19, "Jungle Album2", 2, "Description17", 8.99),
+    (20, "Action Game4", 6, "Description18", 30.00),
+    (21, "Animated Show1", 3, "Description19", 19.99),
+    (22, "Country Album3", 2, "Description20", 5.00),
+    (23, "Game Show2", 5, "Description21", 35.00),
+    (24, "Action Game5", 6, "Description22", 15.00),
+    (25, "2D Game3", 5, "Description23", 60.00),
+    (26, "Dubstep Album1", 2, "Description24", 5.00),
+    (27, "Collector's Game1", 6, "Description25", 999.50),
+    (28, "Animated Show2", 4, "Description26", 30.99),
+    (29, "Kpop Album1", 1, "Description27", 15.99),
+    (30, "Collector's Game2", 5, "Description28", 500.00)
 ]
 cursor.executemany("INSERT OR IGNORE INTO Item (ItemID, ItemName, ItemTypeID, ItemDescription, ItemPrice) VALUES (?, ?, ?, ?, ?);", items)
 
 
 item_types = [
-    (1, "Record", 1, 2),
-    (2, "CD", 2, 1),
+    (1, "Record", 1, 1),
+    (2, "CD", 2, 2),
     (3, "DVD", 2, 2),
-    (4, "Game", 2, 3),
+    (4, "Blu-Ray", 2, 3),
     (5, "Game", 2, 4),
     (6, "Game", 3, 5)
 ]
@@ -498,9 +545,7 @@ cursor.executemany("INSERT OR IGNORE INTO Manufacturer (ManufacturerID, Manufact
 formats = [
     (1, "Analogue"),
     (2, "Optical"),
-    (3, "Solid State"),
-    (4, "Blu-Ray"),
-    (5, "Optical")
+    (3, "Solid State")
 ]
 cursor.executemany("INSERT OR IGNORE INTO FormatType (FormatID, StorageType) VALUES (?, ?);", formats)
 
