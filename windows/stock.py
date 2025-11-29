@@ -49,6 +49,7 @@ class Stock(tk.Tk):
             count =0
             print(returnStock())
             for row in returnStock():
+                  plt.xticks(rotation=90)
                   self.canvas.create_text(start_point_text_x, start_point_text_y+(step*count), text=row[1])
                   a = self.canvas.create_rectangle(start_point_rect_x, start_point_rect_y+(step*count), 60+int(row[2]), 120+(step*count), fill='red')
                   self.canvas.create_text(80+int(row[2]), 110+(step*count),text=str(row[2])+str("%"))

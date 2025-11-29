@@ -15,7 +15,7 @@ class MainWindow(tk.Tk):
             self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 6, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
             self.stockbutton.grid(row = 0, column = 7, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="PRESS THIS TO SIMULATE PURCHASES FOR 4 HARD CODED BASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 8, sticky = W, pady = 2)
+            self.purchasebutton = tk.Button(self, text="PRESS THIS TO \nSIMULATE PURCHASES \nFOR 4 HARD CODED \nBASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 8, sticky = W, pady = 2)
             self.purchasebutton = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 9, sticky = W, pady = 2)
             self.purchasebutton = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
             self.ecommerceSystem = system
@@ -27,7 +27,7 @@ class MainWindow(tk.Tk):
 
             #Grid for item data
             for i in range(len(returnAllItems()[0])):
-                  l1 = Label(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]))
+                  l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nAdd To Basket")
                   l1.grid(row = i//5 + 1, column = i%5 + 1, sticky = W, pady = 2)
 
    
@@ -55,6 +55,7 @@ class MainWindow(tk.Tk):
             loginWindow.mainloop()
 
       def createStockGrapth(self):
+            plt.xticks(rotation=90)
             itemName = returnStock()[0]
             stock = returnStock()[1]
             plt.bar(itemName, stock, color='skyblue')
