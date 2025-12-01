@@ -4,6 +4,7 @@ from ecommerceDBHandler import *
 from .login import Login
 from .stock import Stock
 import matplotlib.pyplot as plt
+from xmlHandler import *
 
 
 class MainWindow(tk.Tk):
@@ -18,6 +19,7 @@ class MainWindow(tk.Tk):
             self.purchasebutton = tk.Button(self, text="PRESS THIS TO \nSIMULATE PURCHASES \nFOR 4 HARD CODED \nBASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 8, sticky = W, pady = 2)
             self.purchasebutton = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 9, sticky = W, pady = 2)
             self.purchasebutton = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
+            self.xmlButton = tk.Button(self, text="Write hashed Logins to XML", command=self.loadXml).grid(row = 0, column = 11, sticky = W, pady = 2)
             self.ecommerceSystem = system
             if self.ecommerceSystem.currentUserName != None:
                   self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 3, sticky = W, pady = 3)
@@ -82,6 +84,9 @@ class MainWindow(tk.Tk):
       def loadMedia(self,):
             for i in range(1,4):
                   Get_media_from_sql(i)
+      
+      def loadXml(self,):
+            loginsToXml()
             
 
 
