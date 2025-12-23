@@ -4,25 +4,44 @@ import ecommerceDBHandler
 class register(tk.Tk):
       def __init__(self, system):
             super().__init__()
-            self.ecommerceSystem = system 
-
-            self.userNameLabe = tk.Label(self, text="Username").pack()
+            self.ecommerceSystem = system
+            self.title("Register")
+            self.userNameLabel = tk.Label(self, text="Username")
+            self.userNameLabel.pack()
             self.userNameText = tk.Text(self, height=1, width=20)
             self.userNameText.pack()
-            self.passwordLabe = tk.Label(self, text="Password").pack()
+            self.passwordLabel = tk.Label(self, text="Password")
+            self.passwordLabel.pack()
             self.passwordText = tk.Text(self, height=1, width=20)
             self.passwordText.pack()
-            self.loginButton = tk.Button(self, text="Register", command=self.register).pack()
+            self.registerButton = tk.Button(self, text="Register", command=self.register)
+            self.registerButton.pack()
             self.wrongText = tk.Label(self, text="Invalid Username or Password", fg="red")
 
-      #Login System
       def register(self):
-            for ID in self.ecommerceSystem.users:
-                  if len(self.userNameText.get("1.0", "end-1c")) > 0 and len(self.passwordText.get("1.0", "end-1c")) > 0:
-                        self.ecommerceSystem.users[(self.userNameText.get("1.0", "end-1c"), self.passwordText.get("1.0", "end-1c"))] = ecommerceDBHandler.generateUserID()
-                        self.destroy()
-                  else:
-                        self.wrongText.pack()
+            import hashlib
+            username = self.userNameText.get("1.0", "end-1c").strip()
+            password = self.passwordText.get("1.0", "end-1c").strip()
+            if not username or not password:
+                  self.wrongText.config(text="Username and Password required")
+                  self.wrongText.pack()
+                  return
+            # Check if username already exists
+            from ecommerceDBHandler import cursor, DB
+            cursor.execute("SELECT Username FROM Logins WHERE Username = ?", (hashlib.sha256(username.encode()).hexdigest(),))
+            if cursor.fetchone():
+                  self.wrongText.config(text="Username already exists")
+                  self.wrongText.pack()
+                  return
+            # Insert new user
+            new_id = ecommerceDBHandler.generateUserID()
+            cursor.execute("INSERT INTO Logins (LoginID, Username, Password) VALUES (?, ?, ?)", (
+                  new_id,
+                  hashlib.sha256(username.encode()).hexdigest(),
+                  hashlib.sha256(password.encode()).hexdigest()
+            ))
+            DB.commit()
+            self.destroy()
 
 
 

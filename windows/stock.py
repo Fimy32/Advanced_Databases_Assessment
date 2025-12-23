@@ -5,40 +5,13 @@ from ecommerceDBHandler import *
 import hashlib
 import matplotlib.pyplot as plt
 
-
-
-
 class Stock(tk.Tk):
       def __init__(self, system):
             super().__init__()
             self.ecommerceSystem = system
             self.title("Stock")
-            # days = returnStock()[0]
-
-            # steps_walked = returnStock()[1]
-
-            # plt.plot(days, steps_walked)
-
-            # plt.show()
-
-
-
-
-
-
-
             self.canvas = Canvas(self, width=550, height=820)
             self.canvas.pack()
-
-            # self.canvas.create_rectangle(50, 20, 150, 80, fill="#476042")
-            # self.canvas.create_rectangle(65, 35, 135, 65, fill="yellow")
-            # self.canvas.create_line(0, 0, 50, 20, fill="#476042", width=3)
-            # self.canvas.create_line(0, 100, 50, 80, fill="#476042", width=3)
-            # self.canvas.create_line(150,20, 200, 0, fill="#476042", width=3)
-            # self.canvas.create_line(150, 80, 200, 100, fill="#476042", width=3)
-
-
-            #Data visualisation bar chart
             start_point_text_x=30
             start_point_text_y=110
 

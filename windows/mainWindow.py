@@ -1,3 +1,6 @@
+#John Password1 IS A USER
+
+
 from tkinter import *
 import tkinter as tk
 from ecommerceDBHandler import *
@@ -12,17 +15,17 @@ class MainWindow(tk.Tk):
             #self.attributes('-fullscreen',True)
             self.geometry("1000x1000")
             self.title("E-commerce Application")
-            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 6, sticky = W, pady = 2)
+            self.closeButton = tk.Button(self, text="Close", command=self.destroy).grid(row = 0, column = 1, sticky = W, pady = 2)
+            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 2, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
-            self.stockbutton.grid(row = 0, column = 7, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="PRESS THIS TO \nSIMULATE PURCHASES \nFOR 4 HARD CODED \nBASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 8, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 9, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
+            self.stockbutton.grid(row = 0, column = 3, sticky = W, pady = 2)
+            self.savwIcons = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 5, sticky = W, pady = 2)
+            self.loadIcons = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 6, sticky = W, pady = 2)
             self.ecommerceSystem = system
+            self.purchasebutton = tk.Button(self, text="Your Basket", command=self.basket).grid(row = 0, column = 9, sticky = W, pady = 2)
             if self.ecommerceSystem.currentUserName != None:
-                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 3, sticky = W, pady = 3)
+                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 10, sticky = W, pady = 3)
             #self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
-            self.closeButton = tk.Button(self, text="Close", command=self.destroy).grid(row = 0, column = 4, sticky = W, pady = 2)
 
 
             #Grid for item data
@@ -82,6 +85,23 @@ class MainWindow(tk.Tk):
       def loadMedia(self,):
             for i in range(1,4):
                   Get_media_from_sql(i)
+
+      def basket(self):
+            if not self.ecommerceSystem.currentUserID:
+                  if not hasattr(self, 'notLoggedInLabel') or not self.notLoggedInLabel.winfo_exists():
+                        self.notLoggedInLabel = tk.Label(self, text="You must be logged in to view your basket.", fg="red")
+                        self.notLoggedInLabel.grid(row=1, column=10, sticky='w', pady=5)
+                  return
+            if hasattr(self, 'notLoggedInLabel') and self.notLoggedInLabel.winfo_exists():
+                  self.notLoggedInLabel.destroy()
+            basketWindow = tk.Tk()
+            basketWindow.title("Your Basket")
+            basketWindow.geometry("400x400")
+            for i in range(len(returnBaskets()[0])):
+                  l1 = Label(basketWindow, text = "Basket ID: " + str(returnBaskets()[0][i]) + " Item ID: " + str(returnBaskets()[1][i]) + " Quantity: " + str(returnBaskets()[2][i]))
+                  l1.pack()
+            simulatePurchaseButton = tk.Button(basketWindow, text="Simulate Purchases", command=self.simulatePurchasesFrontEnd)
+            simulatePurchaseButton.pack()
             
 
 
