@@ -19,18 +19,24 @@ class MainWindow(tk.Tk):
             self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 2, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
             self.stockbutton.grid(row = 0, column = 3, sticky = W, pady = 2)
-            self.savwIcons = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 5, sticky = W, pady = 2)
-            self.loadIcons = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 6, sticky = W, pady = 2)
+            self.resetButton = tk.Button(self, text="RESET DB\n(THIS IS FINAL)", command=self.dbReset).grid(row = 0, column = 9, sticky = W, pady = 2)
+            self.saveIcons = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
+            self.loadIcons = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 11, sticky = W, pady = 2)
             self.ecommerceSystem = system
-            self.purchasebutton = tk.Button(self, text="Your Basket", command=self.basket).grid(row = 0, column = 9, sticky = W, pady = 2)
+            self.basketButton = tk.Button(self, text="Your Basket", command=self.basket).grid(row = 0, column = 4, sticky = W, pady = 2)
             if self.ecommerceSystem.currentUserName != None:
                   self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 10, sticky = W, pady = 3)
+            self.currentItemID = None
             #self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
 
 
             #Grid for item data
             for i in range(len(returnAllItems()[0])):
-                  l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nAdd To Basket")
+                  if returnAllItems()[4][i] > 0:
+                        self.currentItemID = returnAllItems()[2][i]
+                        l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nAdd To Basket", command=self.addToBasket)
+                  else:
+                        l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nOut of Stock")
                   l1.grid(row = i//5 + 1, column = i%5 + 1, sticky = W, pady = 2)
 
    
@@ -88,22 +94,18 @@ class MainWindow(tk.Tk):
 
       def basket(self):
             if not self.ecommerceSystem.currentUserID:
-                  if not hasattr(self, 'notLoggedInLabel') or not self.notLoggedInLabel.winfo_exists():
+                  if self.ecommerceSystem.currentUserID == None:
                         self.notLoggedInLabel = tk.Label(self, text="You must be logged in to view your basket.", fg="red")
                         self.notLoggedInLabel.grid(row=1, column=10, sticky='w', pady=5)
                   return
-            if hasattr(self, 'notLoggedInLabel') and self.notLoggedInLabel.winfo_exists():
-                  self.notLoggedInLabel.destroy()
-            basketWindow = tk.Tk()
-            basketWindow.title("Your Basket")
-            basketWindow.geometry("400x400")
-            for i in range(len(returnBaskets()[0])):
-                  l1 = Label(basketWindow, text = "Basket ID: " + str(returnBaskets()[0][i]) + " Item ID: " + str(returnBaskets()[1][i]) + " Quantity: " + str(returnBaskets()[2][i]))
-                  l1.pack()
-            simulatePurchaseButton = tk.Button(basketWindow, text="Simulate Purchases", command=self.simulatePurchasesFrontEnd)
-            simulatePurchaseButton.pack()
-            
+            basketWindow = Basket(self.ecommerceSystem)
+            basketWindow.mainloop()
 
+      def dbReset(self):
+            resetDB()
+
+      def addToBasket(self):
+            CustomerBasketAdd(findBasket(self.ecommerceSystem.currentUserID), self.currentItemID)
 
 
 

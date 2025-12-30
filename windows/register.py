@@ -14,14 +14,29 @@ class register(tk.Tk):
             self.passwordLabel.pack()
             self.passwordText = tk.Text(self, height=1, width=20)
             self.passwordText.pack()
+            self.firstNameLabel = tk.Label(self, text="First Name")
+            self.firstNameLabel.pack()
+            self.firstNameText = tk.Text(self, height=1, width=20)
+            self.firstNameText.pack()
+            self.secondNameLabel = tk.Label(self, text="Second Name")
+            self.secondNameLabel.pack()
+            self.secondNameText = tk.Text(self, height=1, width=20)
+            self.secondNameText.pack()
+            self.addressLabel = tk.Label(self, text="Address")
+            self.addressLabel.pack()
+            self.addressText = tk.Text(self, height=1, width=20)
+            self.addressText.pack()
+
             self.registerButton = tk.Button(self, text="Register", command=self.register)
             self.registerButton.pack()
-            self.wrongText = tk.Label(self, text="Invalid Username or Password", fg="red")
 
       def register(self):
             import hashlib
             username = self.userNameText.get("1.0", "end-1c").strip()
             password = self.passwordText.get("1.0", "end-1c").strip()
+            firstname = self.firstNameText.get("1.0", "end-1c").strip()
+            secondname = self.secondNameText.get("1.0", "end-1c").strip()
+            address = self.addressText.get("1.0", "end-1c").strip()
             if not username or not password:
                   self.wrongText.config(text="Username and Password required")
                   self.wrongText.pack()
@@ -34,9 +49,8 @@ class register(tk.Tk):
                   self.wrongText.pack()
                   return
             # Insert new user
-            new_id = ecommerceDBHandler.generateUserID()
-            cursor.execute("INSERT INTO Logins (LoginID, Username, Password) VALUES (?, ?, ?)", (
-                  new_id,
+            cursor.execute("INSERT INTO Customer (FirstName, Surname, ShippingAddress) VALUES (?, ?, ?)", (firstname, secondname, address))
+            cursor.execute("INSERT INTO Logins (Username, Password) VALUES (?, ?)", (
                   hashlib.sha256(username.encode()).hexdigest(),
                   hashlib.sha256(password.encode()).hexdigest()
             ))
