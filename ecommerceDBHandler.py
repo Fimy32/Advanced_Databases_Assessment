@@ -196,6 +196,21 @@ def returnAllItems():
     print(rows[0], "\n", rows[1], "\n", rows[2], "\n", rows[3], "\n", rows[4])
     return rows
 
+def return_image(image_name):
+    print("SELECT ItemTypeID FROM Item WHERE ItemName = \"" +str(image_name) + "\"")
+    cursor.execute("SELECT ItemTypeID FROM Item WHERE ItemName = \"" +str(image_name) + "\"")
+    image_type = cursor.fetchall()[0][0]
+    if (image_type == 1 or image_type == 2):
+        image_type = 1
+    if (image_type == 3 or image_type == 4):
+        image_type = 2
+    if (image_type == 5 or image_type == 6):
+        image_type = 3
+    print("SELECT file_blob from icons where id ="+str(image_type))
+    cursor.execute("SELECT file_blob from icons where id ="+str(image_type))
+    record = cursor.fetchall()
+    print(record[0][0])
+    return record[0][0]
 
 
 def simulatePurchases():
