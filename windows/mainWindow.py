@@ -6,6 +6,7 @@ import tkinter as tk
 from ecommerceDBHandler import *
 from .login import Login
 from .stock import Stock
+from .basket import Basket
 import matplotlib.pyplot as plt
 from xmlHandler import *
 from PIL import Image, ImageTk
@@ -18,23 +19,25 @@ class MainWindow(tk.Tk):
             #self.attributes('-fullscreen',True)
             self.geometry("1000x1000")
             self.title("E-commerce Application")
-            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 6, sticky = W, pady = 2)
+            self.closeButton = tk.Button(self, text="Close", command=self.destroy).grid(row = 0, column = 1, sticky = W, pady = 2)
+            self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 2, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
-            self.stockbutton.grid(row = 0, column = 7, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="PRESS THIS TO \nSIMULATE PURCHASES \nFOR 4 HARD CODED \nBASKETS", command=self.simulatePurchasesFrontEnd).grid(row = 0, column = 8, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 9, sticky = W, pady = 2)
-            self.purchasebutton = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
+            self.stockbutton.grid(row = 0, column = 3, sticky = W, pady = 2)
+            self.resetButton = tk.Button(self, text="RESET DB\n(THIS IS FINAL)", command=self.dbReset).grid(row = 0, column = 9, sticky = W, pady = 2)
+            self.saveIcons = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
+            self.loadIcons = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 11, sticky = W, pady = 2)
             self.ecommerceSystem = system
             self.basketButton = tk.Button(self, text="Your Basket", command=self.basket).grid(row = 0, column = 4, sticky = W, pady = 2)
             if self.ecommerceSystem.currentUserName != None:
-                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 3, sticky = W, pady = 3)
-            #self.data = tk.Label(self, text=Ecommerce.returnSpecificCustomerProfileView(), height=40, width=120).pack()
-            self.closeButton = tk.Button(self, text="Close", command=self.destroy).grid(row = 0, column = 4, sticky = W, pady = 2)
-
-
-            #Grid for item data
+                  self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 10, sticky = W, pady = 3)
+            self.currentItemID = None
+            
             for i in range(len(returnAllItems()[0])):
-                  l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nAdd To Basket")
+                  item_id = returnAllItems()[2][i]
+                  if returnAllItems()[4][i] > 0:
+                        l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nAdd To Basket", command=lambda iid=item_id: self.addToBasket(iid))
+                  else:
+                        l1 = Button(self, text = returnAllItems()[0][i] + "\n£" + str(returnAllItems()[1][i]) + "\nOut of Stock")
                   l1.grid(row = i//5 + 1, column = i%5 + 1, sticky = W, pady = 2)
 
    
@@ -89,6 +92,21 @@ class MainWindow(tk.Tk):
       def loadMedia(self,):
             for i in range(1,4):
                   Get_media_from_sql(i)
+
+      def basket(self):
+                  if not self.ecommerceSystem.currentUserID:
+                        if self.ecommerceSystem.currentUserID == None:
+                              self.notLoggedInLabel = tk.Label(self, text="You must be logged in to view your basket.", fg="red")
+                              self.notLoggedInLabel.grid(row=1, column=10, sticky='w', pady=5)
+                        return
+                  basketWindow = Basket(self.ecommerceSystem)
+                  basketWindow.mainloop()
+
+      def dbReset(self):
+            resetDB()
+
+      def addToBasket(self, item_id):
+            CustomerBasketAdd(findBasket(self.ecommerceSystem.currentUserID), item_id)
             
 
 

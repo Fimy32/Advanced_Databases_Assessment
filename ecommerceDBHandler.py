@@ -284,7 +284,7 @@ def findBasket(customerID):
         return cursor.lastrowid
     
 def getEachItemInBasket(basketID):
-    cursor.execute("""SELECT Item.ItemName, Item.ItemPrice, Basket.Quantity 
+    cursor.execute("""SELECT Basket.BasketItemID, Item.ItemID, Item.ItemName, Item.ItemPrice, Basket.Quantity 
                 FROM Basket JOIN Item ON Basket.ItemID = Item.ItemID WHERE Basket.BasketID = ?""", (basketID,))
     items = cursor.fetchall()
     return items
