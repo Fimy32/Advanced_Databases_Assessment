@@ -22,10 +22,12 @@ class Login(tk.Tk):
 
 
       #Login System
+      #This verifies that the login uses an existing username and password from the database
       def login(self):
             for ID in returnLoginIDs():
                   print("UserName:",hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID)[0], "\nPassword:", hashlib.sha256(self.passwordText.get("1.0", "end-1c").encode()).hexdigest(), returnLoginDetailsByID(ID)[1])
-                  if hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID)[0] and hashlib.sha256(self.passwordText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID)[1]:
+                  if (hashlib.sha256(self.userNameText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID)[0] and 
+                  hashlib.sha256(self.passwordText.get("1.0", "end-1c").encode()).hexdigest() == returnLoginDetailsByID(ID)[1]):
                         print("LOG ON SUCCESSFUL")
                         self.ecommerceSystem.currentUserID = ID
                         self.ecommerceSystem.currentUserName = self.userNameText.get("1.0", "end-1c")

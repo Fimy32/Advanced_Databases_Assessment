@@ -5,6 +5,7 @@ cursor = DB.cursor()
 
 
 
+#Question Marks (?) are used in queries when a variable is used to anonymise them. This prevents SQL injection attacks.
 def CustomerBasketPaid(basket_id):
     cursor.execute("""
         UPDATE CustomerBasket
@@ -48,6 +49,7 @@ def returnCustomerProfileView():
     cursor.execute("SELECT * FROM CustomerProfile;")
     return cursor.fetchone()
 
+#This view shows a specific customer's profile based on their customer ID
 def specificCustomerProfileView(customer_id):
     cursor.executescript("""
     DROP VIEW IF EXISTS SpecificCustomerProfile;
@@ -62,6 +64,7 @@ def returnSpecificCustomerProfileView():
     cursor.execute("SELECT * FROM SpecificCustomerProfile;")
     return cursor.fetchone()
 
+#Thus view shows all items that have been paid for already
 def createDeliveredItemsView():
     cursor.execute("""
         DROP VIEW IF EXISTS DeliveredItems;
@@ -76,6 +79,7 @@ def createDeliveredItemsView():
         SELECT *
         FROM DeliveredItems;""")
 
+#This view shows the total amount of items held in baskets as well as their total value
 def createTotalSoldView():
     cursor.execute("""
         DROP VIEW IF EXISTS TotalSold;
@@ -91,7 +95,11 @@ def createTotalSoldView():
         SELECT *
         FROM TotalSold;""")
 
+
+#This view shows the profits of the currently sold items
 def createTotalItemSoldView():
+    #This join connects the basket table to the item table. 
+    #It groups by item ID to only show each item once
     cursor.execute("""
         DROP VIEW IF EXISTS TotalItemSold;
 
@@ -102,10 +110,11 @@ def createTotalItemSoldView():
         FROM Item
         RIGHT JOIN Basket ON Basket.ItemID = Item.ItemID
         GROUP BY Item.ItemID;
-
         SELECT *
         FROM TotalItemSold;""")
-    
+
+#This function gets the most recent customer ID, useful for regisration
+#as you can use the ID to join them to the logins table  
 def generateUserID():
     cursor.execute("SELECT MAX(CustomerID) FROM Customer;")
     max_id = cursor.fetchone()[0]
@@ -113,6 +122,7 @@ def generateUserID():
         return 1
     else:
         return max_id + 1
+
     
 def returnLoginIDs():
     cursor.execute("SELECT LoginID FROM Logins")
@@ -122,11 +132,14 @@ def returnLoginIDs():
         IDs.append(loginID[0])
     return IDs
 
+#This function returns login details based on a given ID. This can be
+# reused whenever the front end needs the username for the current user
 def returnLoginDetailsByID(ID):
     rows = cursor.execute("""SELECT Username, Password FROM Logins WHERE LoginID = ?;""", ( ID,))
     for row in rows:
         return row
-
+#This function returns stock levels for all items and their names. This can be reused 
+#for buying items, adding items to basket, and showing all stock levels in a graph
 def returnStock():
     cursor.execute("SELECT ItemName FROM item")
     items = cursor.fetchall()
@@ -144,6 +157,7 @@ def returnStock():
     print(rows[0], "\n", rows[1])
     return rows
 
+#This function returns an itemised version of each basket for the front end to display to the user
 def returnBaskets():
     cursor.execute("SELECT BasketID FROM basket")
     ids = cursor.fetchall()
@@ -161,6 +175,7 @@ def returnBaskets():
     print(rows[0], "\n", rows[1])
     return rows
 
+#This function itemises all items in the aatabase for the front end to proccess and display
 def returnAllItems():
     cursor.execute("SELECT ItemName FROM Item")
     names = cursor.fetchall()
@@ -239,15 +254,13 @@ def send_media_to_sql_user(filePath):
     #message to test
     print("[INFO] : The blob for ", filePath, " sent and saved in the database audio_table.") 
 
+#Images are saved to the Database utilising blobs
 def send_media_to_sql():
         paths = ["./icons/music.png", "./icons/movie.png", "./icons/game.png"]
         for path in paths:
-            #To open a file in binary format, add 'b' to the mode parameter and "rb" mode opens the file in binary format for reading.
             with open(path, 'rb') as file:
                 file_blob = file.read()
-            #to see file in BLOB values
             print("[INFO] : the last 100 characters of blob = ", file_blob[:100]) 
-            #to insert file_path_name and BLOB to database audio_table
             sql_insert_file_query = "INSERT INTO Icons(file_path_name, file_blob)VALUES(?, ?)"
             cursor.execute(sql_insert_file_query, (path, file_blob, ))
             DB.commit()
@@ -256,6 +269,7 @@ def send_media_to_sql():
 
 send_media_to_sql()
 
+#They are also read (And then saved back as files) from the SQL using blobs
 def Get_media_from_sql(iconID):
         print("[INFO] : Connected to SQLite to read_blob_data")
         cursor.execute("""SELECT * from Icons where id = ?;""", (iconID,))                        
@@ -288,6 +302,11 @@ def getEachItemInBasket(basketID):
                 FROM Basket JOIN Item ON Basket.ItemID = Item.ItemID WHERE Basket.BasketID = ?""", (basketID,))
     items = cursor.fetchall()
     return items
+
+def register(firstName, secondName, Address, hashedUsername, hashedPassword):
+        cursor.execute("INSERT INTO Customer (FirstName, Surname, ShippingAddress) VALUES (?, ?, ?)", (firstName, secondName, Address))
+        cursor.execute("INSERT INTO Logins (Username, Password) VALUES (?, ?)", (hashedUsername, hashedPassword))
+        DB.commit()
 
 
 #----------------------------------------------------------------------------------------------------------------------------------------------
@@ -520,6 +539,7 @@ def resetDB():
 
     encrypted_logins = []
 
+    #Logins are encrypted using hashing before being added to the database for extra security
     for login in logins:
         encrypted_logins.append((login[0],
             str(hashlib.sha256(login[1].encode()).hexdigest()),
@@ -581,6 +601,12 @@ def resetDB():
         END;
     """)
 
+    #The above is an example of a trigger. It is initialised in the database
+    #When a item gets added to a basket, it removes the stock from the item table
+    #This is useful as it reduces having to design and call functions everytime a
+    #user has the option to add an item to their basket. It also insures the right
+    #tables are accessed - useful for if a front end developer changes code.
+
     #Edit stock when user updates basket
     cursor.execute("""
         CREATE TRIGGER UpdateItemInBasketTrigger
@@ -609,17 +635,8 @@ def resetDB():
         ON Basket
         BEGIN
         UPDATE Item
-        SET Stock = Stock + (
-            SELECT Quantity
-            FROM Basket
-            WHERE Basket.BasketID = OLD.BasketID
-            AND Basket.ItemID = Item.ItemID
-        )
-        WHERE Item.ItemID IN (
-            SELECT ItemID
-            FROM Basket
-            WHERE Basket.BasketID = OLD.BasketID
-        );
+        SET Stock = Stock + OLD.Quantity
+        WHERE Item.ItemID = OLD.ItemID;
         END;
     """)
 

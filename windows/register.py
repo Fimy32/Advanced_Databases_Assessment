@@ -27,10 +27,12 @@ class register(tk.Tk):
             self.addressText = tk.Text(self, height=1, width=20)
             self.addressText.pack()
 
-            self.registerButton = tk.Button(self, text="Register", command=self.register)
+            self.registerButton = tk.Button(self, text="Register", command=self.registerUser)
             self.registerButton.pack()
 
-      def register(self):
+      #The registration proccess, validates the user has not left a field empty. 
+      #THis ensures empty fields aren't added to the Database
+      def registerUser(self):
             import hashlib
             username = self.userNameText.get("1.0", "end-1c").strip()
             password = self.passwordText.get("1.0", "end-1c").strip()
@@ -41,20 +43,7 @@ class register(tk.Tk):
                   self.wrongText.config(text="Username and Password required")
                   self.wrongText.pack()
                   return
-            # Check if username already exists
-            from ecommerceDBHandler import cursor, DB
-            cursor.execute("SELECT Username FROM Logins WHERE Username = ?", (hashlib.sha256(username.encode()).hexdigest(),))
-            if cursor.fetchone():
-                  self.wrongText.config(text="Username already exists")
-                  self.wrongText.pack()
-                  return
-            # Insert new user
-            cursor.execute("INSERT INTO Customer (FirstName, Surname, ShippingAddress) VALUES (?, ?, ?)", (firstname, secondname, address))
-            cursor.execute("INSERT INTO Logins (Username, Password) VALUES (?, ?)", (
-                  hashlib.sha256(username.encode()).hexdigest(),
-                  hashlib.sha256(password.encode()).hexdigest()
-            ))
-            DB.commit()
+            ecommerceDBHandler.register(firstname, secondname, address,hashlib.sha256(username.encode()).hexdigest(),hashlib.sha256(password.encode()).hexdigest())
             self.destroy()
 
 
