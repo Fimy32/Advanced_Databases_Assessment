@@ -25,14 +25,16 @@ class MainWindow(tk.Tk):
             self.loginbutton = tk.Button(self, text="Login", command=self.createLoginWindow).grid(row = 0, column = 2, sticky = W, pady = 2)
             self.stockbutton = tk.Button(self, text="Stock", command=self.createStockGrapth)
             self.stockbutton.grid(row = 0, column = 3, sticky = W, pady = 2)
-            self.resetButton = tk.Button(self, text="RESET DB\n(THIS IS FINAL)", command=self.dbReset).grid(row = 0, column = 9, sticky = W, pady = 2)
-            self.saveIcons = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 10, sticky = W, pady = 2)
-            self.loadIcons = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 11, sticky = W, pady = 2)
+            self.resetButton = tk.Button(self, text="RESET DB\n(THIS IS FINAL)", command=self.dbReset).grid(row = 0, column = 15, sticky = W, pady = 2)
+            self.saveIcons = tk.Button(self, text="SAVE THE ICONS FILE TO DATABASE", command=self.saveMedia).grid(row = 0, column = 11, sticky = W, pady = 2)
+            self.loadIcons = tk.Button(self, text="LOAD ICONS FROM DATABASE", command=self.loadMedia).grid(row = 0, column = 12, sticky = W, pady = 2)
             self.ecommerceSystem = system
             self.basketButton = tk.Button(self, text="Your Basket", command=self.basket).grid(row = 0, column = 4, sticky = W, pady = 2)
             if self.ecommerceSystem.currentUserName != None:
                   self.usertext = tk.Label(self, self.ecommerceSystem.currentUserName).grid(row = 0, column = 10, sticky = W, pady = 3)
             self.currentItemID = None
+            self.xmlsave = tk.Button(self, text="Convert To XML", command=self.savexml).grid(row = 1, column = 11, sticky = W, pady = 2)
+            self.xmlload = tk.Button(self, text="XML to DB", command=self.loadxml).grid(row = 1, column = 12, sticky = W, pady = 2)
             
             for i in range(len(returnAllItems()[0])):
                   item_id = returnAllItems()[2][i]
@@ -111,6 +113,12 @@ class MainWindow(tk.Tk):
 
       def addToBasket(self, item_id):
             CustomerBasketAdd(findBasket(self.ecommerceSystem.currentUserID), item_id)
+
+      def savexml(self):
+            loginsToXml()
+      
+      def loadxml(self):
+            xmltologins()
             
 
 

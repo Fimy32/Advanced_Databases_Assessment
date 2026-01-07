@@ -1,5 +1,6 @@
 import tkinter as tk
 from ecommerceDBHandler import *
+from windows.previousBasket import previousBasket
 
 class Basket(tk.Tk):
       def __init__(self, system):
@@ -22,6 +23,8 @@ class Basket(tk.Tk):
                   self.rowNumber = i
             purchaseAllButton = tk.Button(self, text="Purchase All", command=self.purchaseAll)
             purchaseAllButton.grid(row=1, column=12, sticky="w", padx=10, pady=5)
+            previousBasketButton = tk.Button(self, text="Previous Orders", command=self.previousOrders)
+            previousBasketButton.grid(row=2, column=12, sticky="w", padx=10, pady=5)
             self.closeButton = tk.Button(self, text="Close", command=self.destroy).grid(row = 1, column = 13, sticky = "W", pady = 2)
 
       def additem(self, uniqueId, currentQuantity):
@@ -43,4 +46,8 @@ class Basket(tk.Tk):
             CustomerBasketPaid(self.basketId)
             self.destroy()
             Basket(self.ecommerceSystem)
+
+      def previousOrders(self):
+            previousBasketWindow = previousBasket(self.ecommerceSystem)
+            previousBasketWindow.mainloop()
       

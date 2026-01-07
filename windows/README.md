@@ -8,3 +8,5 @@
 Username: "John"
 Password: "Password1"
 can be used for quick access and testing
+
+5. There is a full reset button on the main page. This will revert the database to the default values

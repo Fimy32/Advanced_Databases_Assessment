@@ -283,7 +283,6 @@ def Get_media_from_sql(iconID):
         with open(final_file_name, 'wb') as file:
                 file.write(media_binarycode)
 
-        
 Get_media_from_sql(1)
 Get_media_from_sql(2)
 Get_media_from_sql(3)
@@ -296,6 +295,13 @@ def findBasket(customerID):
     else:
         cursor.execute("INSERT INTO CustomerBasket (CustomerID, Paid) VALUES (?, FALSE);", (customerID,))
         return cursor.lastrowid
+
+def findPaidBasket(customerID):
+    cursor.execute("SELECT BasketID FROM CustomerBasket WHERE CustomerID = ? AND Paid = TRUE;", (customerID,))
+    basket = cursor.fetchall()
+    if basket:
+        print("PREVIOUS ORDERS", basket)
+        return basket
     
 def getEachItemInBasket(basketID):
     cursor.execute("""SELECT Basket.BasketItemID, Item.ItemID, Item.ItemName, Item.ItemPrice, Basket.Quantity 
@@ -355,7 +361,7 @@ def resetDB():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS PreviousOrder (
         BasketID INTEGER PRIMARY KEY,
-        Time TEXT DEFAULT 'September',
+        Time TEXT,
         FOREIGN KEY (BasketID) REFERENCES CustomerBasket(BasketID)
     );
     """)
