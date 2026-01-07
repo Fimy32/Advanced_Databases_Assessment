@@ -1,5 +1,5 @@
 import tkinter as tk
-from .register import register
+from .register import Register
 from ecommerceDBHandler import *
 import hashlib
 
@@ -37,7 +37,7 @@ class Login(tk.Tk):
                         self.wrongText.pack()
 
       def createRegisterWindow(self):
-            registerWindow = register(self.ecommerceSystem)
+            registerWindow = Register(self.ecommerceSystem)
             registerWindow.mainloop()
 
 

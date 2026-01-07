@@ -1,7 +1,7 @@
 import tkinter as tk
 import ecommerceDBHandler
 
-class register(tk.Tk):
+class Register(tk.Toplevel):
       def __init__(self, system):
             super().__init__()
             self.ecommerceSystem = system

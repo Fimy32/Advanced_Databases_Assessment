@@ -67,6 +67,7 @@ class MainWindow(tk.Tk):
       def createLoginWindow(self):
             loginWindow = Login(self.ecommerceSystem)
             loginWindow.mainloop()
+
       #This grapth shows inovation by generating a couple different grapths
       #This is an effective way for an admin to use data visualisation to see stock levels
       #and the amount of stock in baskets
